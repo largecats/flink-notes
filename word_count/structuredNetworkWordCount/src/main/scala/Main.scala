@@ -33,6 +33,8 @@ object Main {
     // Generate running word count
     val wordCounts = words.groupBy("value").count()
 
+    // Default triggering: Next micro-batch is triggered as soon as the preivous micro-batch has completed
+    // Output to console in complete mode: Print the entire updated wordCounts in console at the end of each micro-batch
     val query = wordCounts.writeStream.outputMode("complete").format("console").start()
 
     query.awaitTermination()
