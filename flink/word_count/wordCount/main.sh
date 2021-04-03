@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -xe
 
 root="/mnt/c/Users/${USER}/Fun/programming/streaming-notes/flink/"
 
@@ -10,6 +10,7 @@ modelName=$(basename $(dirname $(realpath ${BASH_SOURCE})))
 
 param=${@}
 flinkRun="/mnt/c/flink-1.12.2/bin/flink run"
+deployMode=" -t yarn-per-job"
 target="target/scala-2.11/${modelName}.jar"
 
 logDir="${root}/logs/${repoName}/${moduleName}_${modelName}"
@@ -20,6 +21,7 @@ logPath=${logPath// /.}
 
 cd `dirname $0` # move to directory where this shell script is in
 ${flinkRun} \
+    ${deployMode} \
     ${target} ${param} \
     |& tee ${logPath}
 
