@@ -54,7 +54,7 @@ object Main {
       .filter(_.nonEmpty)
       .map((_, 1))
       // group by the tuple field "0" and sum up tuple field "1"
-      .keyBy(_._1)
+      .keyBy(_._1) // Scala tuple index is 1-based
       .sum(1)
 
     // emit result

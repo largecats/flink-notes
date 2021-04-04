@@ -12,7 +12,7 @@ Flink: Batch is bounded stream. Stream is unbounded stream.
 
 **APIs.** Structured streaming seems more SQL-like. Flink seems more MapReduce-like.
 
-|                               | Structured Streaming                                         | Flink                                                        |
+|                               | Structured Streaming                                         | Flink (streaming)                                            |
 | ----------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | Primitive operations          | MapReduce-like and SQL-like operations on DataFrame, Dataset, see [here](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#operations-on-streaming-dataframesdatasets) | MapReduce-like operations on DataStream, see [here](https://ci.apache.org/projects/flink/flink-docs-release-1.12/dev/stream/operators/) |
 | Arbitrary stateful operations | `mapGroupsWithState`, `flatMapGroupsWithState`               | `ProcessFunction`                                            |
@@ -22,6 +22,8 @@ Flink: Batch is bounded stream. Stream is unbounded stream.
 ## Try Flink
 
 ### Local Installation
+
+Environment: Java 8 with flink-1.12.2-bin-scala_2.11.tgz.
 
 Sample repo: https://github.com/largecats/streaming-notes/tree/main/flink/word_count
 
@@ -86,3 +88,36 @@ And `counts.print()` prints to stdout by definition:
 
 3. Will we be able to use YARN's log aggregation after integrating Flink with YARN?
 
+### Fraud Detection with the DataStream API
+
+In ubuntu, type:
+
+```shell
+mvn archetype:generate \
+    -DarchetypeGroupId=org.apache.flink \
+    -DarchetypeArtifactId=flink-walkthrough-datastream-scala \
+    -DarchetypeVersion=1.12.2 \
+    -DgroupId=frauddetection \
+    -DartifactId=frauddetection \
+    -Dversion=0.1 \
+    -Dpackage=spendreport \
+    -DinteractiveMode=false
+```
+
+Then create project from existing sources in IntelliJ, choose maven instead of sbt.
+
+Error:
+
+![](images/fraud_detection_error.png)
+
+Solution: In `pom.xml`, change `<scope>provided</scope>` to `<scope>compile</scope>`. See https://stackoverflow.com/questions/54106187/apache-flink-java-lang-noclassdeffounderror.
+
+Dummy code execution (raises alert for every transaction):
+
+![](images/fraud_detection_first_version.png)
+
+## To-do
+
+1. Replicate Structured Streaming's word count example in Flink (reading from port),
+2. Replicate the fraud detection example using sbt instead of maven.
+3. Find out how Flink implements watermark and ProcessFunction and how Flink differs from Structured Streaming in these aspects.
