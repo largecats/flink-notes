@@ -46,7 +46,7 @@ public class SpendReport {
                 .groupBy($("account_id"), $("log_ts"))
                 .select(
                     $("account_id"),
-                    $("log_ts"),
+                    $("log_ts").start().as("log_ts"),
                     $("amount").sum().as("amount"));
     }
 

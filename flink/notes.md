@@ -124,7 +124,7 @@ Dummy code execution (raises alert for every transaction):
 
 ##### Install docker in WSL
 
-https://docs.docker.com/engine/install/ubuntu/
+https://docs.docker.com/engine/install/ubuntu/ (not needed)
 
 Error: 
 
