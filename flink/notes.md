@@ -124,7 +124,7 @@ Dummy code execution (raises alert for every transaction):
 
 ##### Install docker in WSL
 
-https://docs.docker.com/engine/install/ubuntu/ (not needed)
+https://docs.docker.com/engine/install/ubuntu/ (not needed with docker desktop)
 
 Error: 
 
@@ -133,9 +133,13 @@ $ sudo docker run hello-world
 docker: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
 ```
 
-Solution: Install docker desktop and convert to WSL 2.
+Solution: 
 
-https://stackoverflow.com/questions/61592709/docker-not-running-on-ubuntu-wsl-cannot-connect-to-the-docker-daemon-at-unix
+1. Install docker desktop and convert WSL to WSL 2. https://stackoverflow.com/questions/61592709/docker-not-running-on-ubuntu-wsl-cannot-connect-to-the-docker-daemon-at-unix
+
+2. Enable WSL integration in docker desktop:
+
+   ![](images/docker_wsl_integration.png)
 
 ![](images/docker_hello_world.jpg)
 
@@ -148,6 +152,12 @@ Error:
 Solution: Docker Desktop >> Docker Engine >> "buildkit": false
 
 https://stackoverflow.com/questions/65361083/docker-build-failed-to-fetch-oauth-token-for-openjdk
+
+![](images/docker_engine_config.png)
+
+After successful build and run:
+
+![](images/docker_desktop_containers.png)
 
 ## To-do
 
