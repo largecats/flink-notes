@@ -5,3 +5,7 @@
 **Replayable streaming source.** Data range of the last incomplete micro-batch can be re-read from source.
 
 **Idempotent streaming sink.** The sink can identify re-executed micro-batches and ignore duplicate writes cased by restarts.
+
+**Window**. A grouping based on time. Splits the stream into buckets of finite size.
+
+**Tumble window.** A window with fixed size and whose buckets do not overlap.

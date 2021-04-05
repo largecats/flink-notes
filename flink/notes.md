@@ -10,14 +10,14 @@ Flink: Batch is bounded stream. Stream is unbounded stream.
 
 **Data consistency guarantee.** End-to-end exactly-once fault-tolerance for both.
 
-**APIs.** Structured streaming seems more SQL-like. Flink seems more MapReduce-like.
+**APIs.**
 
-|                               | Structured Streaming                                         | Flink (streaming)                                            |
+|                               | Structured Streaming                                         | Flink                                                        |
 | ----------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Primitive operations          | MapReduce-like and SQL-like operations on DataFrame, Dataset, see [here](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#operations-on-streaming-dataframesdatasets) | MapReduce-like operations on DataStream, see [here](https://ci.apache.org/projects/flink/flink-docs-release-1.12/dev/stream/operators/) |
+| Primitive operations          | DataFrame, Dataset APIs: MapReduce-like and SQL-like operations see [here](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#operations-on-streaming-dataframesdatasets) | DataStream API: MapReduce-like operations, see [here](https://ci.apache.org/projects/flink/flink-docs-release-1.12/dev/stream/operators/)<br />Table API: SQL-like operations, see [here](https://ci.apache.org/projects/flink/flink-docs-release-1.12/dev/table/tableApi.html) |
 | Arbitrary stateful operations | `mapGroupsWithState`, `flatMapGroupsWithState`               | `ProcessFunction`                                            |
 
-
+**Overall.** Spark's APIs seem more unified (Flink's DataSet API is only for batch). But Flink seems to have more natural support for streaming.
 
 ## Try Flink
 
@@ -50,7 +50,7 @@ Can search in [Maven repository](https://mvnrepository.com/search?q=flink+scala)
 /mnt/c/flink-1.12.2/bin/flink run target/scala-2.11/wordCount.jar
 ```
 
-#### TBD
+#### Questions
 
 **Observation.** Only statements printed via `println("xxx")`:
 
@@ -115,6 +115,39 @@ Solution: In `pom.xml`, change `<scope>provided</scope>` to `<scope>compile</sco
 Dummy code execution (raises alert for every transaction):
 
 ![](images/fraud_detection_first_version.png)
+
+#### Questions
+
+1. Why is `timerState` needed?
+
+### Real Time Reporting with the Table API
+
+##### Install docker in WSL
+
+https://docs.docker.com/engine/install/ubuntu/
+
+Error: 
+
+```shell
+$ sudo docker run hello-world
+docker: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+```
+
+Solution: Install docker desktop and convert to WSL 2.
+
+https://stackoverflow.com/questions/61592709/docker-not-running-on-ubuntu-wsl-cannot-connect-to-the-docker-daemon-at-unix
+
+![](images/docker_hello_world.jpg)
+
+##### Build docker container
+
+Error:
+
+![](images/docker_build_error.jpg)
+
+Solution: Docker Desktop >> Docker Engine >> "buildkit": false
+
+https://stackoverflow.com/questions/65361083/docker-build-failed-to-fetch-oauth-token-for-openjdk
 
 ## To-do
 

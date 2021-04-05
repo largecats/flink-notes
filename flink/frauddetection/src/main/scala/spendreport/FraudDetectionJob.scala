@@ -35,7 +35,7 @@ object FraudDetectionJob {
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
 
     val transactions: DataStream[Transaction] = env
-      .addSource(new TransactionSource) // Generates an inifinite stream of card transactions
+      .addSource(new TransactionSource) // Generates an infinite stream of card transactions
       .name("transactions") // For debugging purpose
 
     val alerts: DataStream[Alert] = transactions
