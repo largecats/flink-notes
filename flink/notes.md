@@ -159,6 +159,31 @@ After successful build and run:
 
 ![](images/docker_desktop_containers.png)
 
+If the Flink console does not display anything and the sql database is empty, the application might have terminated unexpectedly, check logs to verify (see https://ci.apache.org/projects/flink/flink-docs-release-1.12/try-flink/flink-operations-playground.html#logs):
+
+```
+docker-compose logs -f jobmanager
+```
+
+### Flink Operations Playground
+
+`posixpath` error:
+
+```
+Traceback (most recent call last):
+  File "bin/docker-compose", line 3, in <module>
+  File "compose/cli/main.py", line 67, in main
+  File "compose/cli/main.py", line 123, in perform_command
+  File "compose/cli/command.py", line 69, in project_from_options
+  File "compose/cli/command.py", line 125, in get_project
+  File "compose/cli/command.py", line 184, in get_project_name
+  File "posixpath.py", line 383, in abspath
+FileNotFoundError: [Errno 2] No such file or directory
+[3512] Failed to execute script docker-compose
+```
+
+Solution: Restart Docker Desktop and WSL. https://github.com/docker/compose/issues/7899
+
 ## To-do
 
 1. Replicate Structured Streaming's word count example in Flink (reading from port),
