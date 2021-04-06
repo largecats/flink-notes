@@ -21,6 +21,7 @@ package org.apache.flink.training.exercises.ridecleansing.scala
 import org.apache.flink.training.exercises.common.sources.TaxiRideGenerator
 import org.apache.flink.training.exercises.common.utils.ExerciseBase._
 import org.apache.flink.training.exercises.common.utils.{ExerciseBase, GeoUtils, MissingSolutionException}
+import org.apache.flink.training.exercises.common.datatypes._
 import org.apache.flink.streaming.api.scala._
 
 /**
@@ -37,7 +38,7 @@ object RideCleansingExercise extends ExerciseBase {
 
     // set up the execution environment
     val env = StreamExecutionEnvironment.getExecutionEnvironment
-    env.setParallelism(parallelism)
+    env.setParallelism(parallelism) // 4 subtasks for each operator
 
     // get the taxi ride data stream
     val rides = env.addSource(rideSourceOrTest(new TaxiRideGenerator()))
@@ -45,6 +46,7 @@ object RideCleansingExercise extends ExerciseBase {
     val filteredRides = rides
       // filter out rides that do not start and end in NYC
       .filter(ride => GeoUtils.isInNYC(ride.startLon, ride.startLat) && GeoUtils.isInNYC(ride.endLon, ride.endLat))
+        .map(new EnrichedRide(_)) // Add fields startCell, endCell
 
     // print the filtered stream
     printOrTest(filteredRides)
