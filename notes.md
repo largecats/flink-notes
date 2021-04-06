@@ -52,7 +52,11 @@ Can search in [Maven repository](https://mvnrepository.com/search?q=flink+scala)
 
 #### Questions
 
-**Observation.** Only statements printed via `println("xxx")`:
+**Observation.** When running in IDE, all statements are printed to the console:
+
+![](images/wordcount_ide.jpg)
+
+In WSL, only statements printed via `println("xxx")`:
 
 ![Console output of the WordCount example.](images/console.png)
 
@@ -106,11 +110,19 @@ mvn archetype:generate \
 
 Then create project from existing sources in IntelliJ, choose maven instead of sbt.
 
-Error:
+###### Error: java.lang.NoClassDefFound
 
 ![](images/fraud_detection_error.png)
 
-Solution: In `pom.xml`, change `<scope>provided</scope>` to `<scope>compile</scope>`. See https://stackoverflow.com/questions/54106187/apache-flink-java-lang-noclassdeffounderror.
+Solution: 
+
+- If using maven, in `pom.xml`, change `<scope>provided</scope>` to `<scope>compile</scope>`. See https://stackoverflow.com/questions/54106187/apache-flink-java-lang-noclassdeffounderror.
+
+- If using sbt, go to "Edit Configurations" and select "Include dependencies with 'Provided' scope".
+
+  ![](images/intellij_edit_config.jpg)
+
+  ![](images/intellij_config.jpg)
 
 Dummy code execution (raises alert for every transaction):
 
@@ -126,7 +138,7 @@ Dummy code execution (raises alert for every transaction):
 
 https://docs.docker.com/engine/install/ubuntu/ (not needed with docker desktop)
 
-Error: 
+###### Error: Cannot connect to Docker daemon
 
 ```shell
 $ sudo docker run hello-world
@@ -145,7 +157,7 @@ Solution:
 
 ##### Build docker container
 
-Error:
+###### Error: Failed to build
 
 ![](images/docker_build_error.jpg)
 
@@ -167,7 +179,7 @@ docker-compose logs -f jobmanager
 
 ### Flink Operations Playground
 
-`posixpath` error:
+###### Error: posixpath - no such file or directory
 
 ```
 Traceback (most recent call last):
@@ -183,6 +195,41 @@ FileNotFoundError: [Errno 2] No such file or directory
 ```
 
 Solution: Restart Docker Desktop and WSL. https://github.com/docker/compose/issues/7899
+
+#### Upgrading & Rescaling a Job 
+
+###### Error: Could not stop with a savejoint job "..."
+
+![](images/savepoint_failure_1.jpg)
+
+![](images/savepoint_failure_2.jpg)
+
+https://stackoverflow.com/questions/53735318/flink-how-to-solve-error-this-job-is-not-stoppable
+
+checkpointSize = -1:
+
+![](images/checkpointSize.jpg)
+
+But the job's `isStoppable` property is false:
+
+![](images/stoppable.jpg)
+
+## Learn Flink
+
+### Overview
+
+```java
+DataStream<Person> flintstones = env.fromElements(
+    new Person("Fred", 35),
+    new Person("Wilma", 35),
+    new Person("Pebbles", 2));
+```
+
+![](images/fromElements.jpg)
+
+#### Questions
+
+"State is always accessed locally" - does this mean it's stored in the memory/disk of executors (not sure what's the equivalent in Flink)?
 
 ## To-do
 

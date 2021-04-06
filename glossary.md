@@ -9,3 +9,13 @@
 **Window**. A grouping based on time. Splits the stream into buckets of finite size.
 
 **Tumble window.** A window with fixed size and whose buckets do not overlap.
+
+| Flink                  | Spark                       |
+| ---------------------- | --------------------------- |
+| JobManager             | Application master          |
+| TaskManager            | Executor                    |
+| One-to-one streams     | Narrow transformations      |
+| Redistributing streams | Wide transformation/shuffle |
+| Task                   | Stage                       |
+
+**POJO.** A plain old Java object is an ordinary Java object, not bound by any special restriction.
