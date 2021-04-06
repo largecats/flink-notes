@@ -243,6 +243,14 @@ https://stackoverflow.com/questions/59094029/unnecessarily-replacing-a-task-that
 
 Solution: Add `import org.apache.flink.training.exercises.testing.TaxiRideTestBase.TestRideSource` to /java/org.apache.flink.training.exercises/ridecleansing/RideCleansingTest.java.
 
+### Data Pipelines & ETL
+
+#### Questions
+
+What does the flapMap example do? What's the expected output?
+
+
+
 ## To-do
 
 1. Replicate Structured Streaming's word count example in Flink (reading from port),

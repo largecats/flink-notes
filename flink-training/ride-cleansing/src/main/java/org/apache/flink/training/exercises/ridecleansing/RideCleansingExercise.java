@@ -19,12 +19,19 @@
 package org.apache.flink.training.exercises.ridecleansing;
 
 import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.training.exercises.common.datatypes.TaxiRide;
+import org.apache.flink.training.exercises.common.datatypes.EnrichedRide;
 import org.apache.flink.training.exercises.common.sources.TaxiRideGenerator;
 import org.apache.flink.training.exercises.common.utils.ExerciseBase;
 import org.apache.flink.training.exercises.common.utils.MissingSolutionException;
+import org.apache.flink.training.exercises.common.utils.GeoUtils;
+import org.apache.flink.util.Collector;
+
+import java.util.logging.Filter;
 
 /**
  * The "Ride Cleansing" exercise from the Flink training in the docs.
@@ -53,8 +60,14 @@ public class RideCleansingExercise extends ExerciseBase {
 				// filter out rides that do not start or stop in NYC
 				.filter(new NYCFilter());
 
+		DataStream<EnrichedRide> enrichedNYCRides = rides
+//				.filter(new NYCFilter())
+//				.map(new Enrichment());
+				.flatMap(new NYCEnrichment());
+		enrichedNYCRides.print();
+
 		// print the filtered stream
-		printOrTest(filteredRides);
+//		printOrTest(filteredRides);
 
 		// run the cleansing pipeline
 		env.execute("Taxi Ride Cleansing");
@@ -64,7 +77,25 @@ public class RideCleansingExercise extends ExerciseBase {
 
 		@Override
 		public boolean filter(TaxiRide taxiRide) throws Exception {
-			throw new MissingSolutionException();
+			return GeoUtils.isInNYC(taxiRide.startLon, taxiRide.startLat) && GeoUtils.isInNYC(taxiRide.endLon,
+					taxiRide.endLat);
+		}
+	}
+
+	public static class Enrichment implements MapFunction<TaxiRide, EnrichedRide> {
+		@Override
+		public EnrichedRide map(TaxiRide taxiRide) throws Exception {
+			return new EnrichedRide(taxiRide);
+		}
+	}
+
+	public static class NYCEnrichment implements FlatMapFunction<TaxiRide, EnrichedRide> {
+		@Override
+		public void flatMap(TaxiRide taxiRide, Collector<EnrichedRide> out) throws Exception {
+			FilterFunction<TaxiRide> valid = new NYCFilter();
+			if (valid.filter(taxiRide)) {
+				out.collect(new EnrichedRide(taxiRide));
+			}
 		}
 	}
 
