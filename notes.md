@@ -231,6 +231,18 @@ DataStream<Person> flintstones = env.fromElements(
 
 "State is always accessed locally" - does this mean it's stored in the memory/disk of executors (not sure what's the equivalent in Flink)?
 
+### Intro to the DataStream API
+
+###### Error: Unnecessarily replacing a task that does not exist is not supported...
+
+Solution: Change Gradle to IntelliJ IDEA in IntelliJ IDEA >> File >> Settings >> Build, Execution, Deployhment >> Gradle >> Build and run using: IntelliJ IDEA; Run tests using: IntelliJ IDEA.
+
+https://stackoverflow.com/questions/59094029/unnecessarily-replacing-a-task-that-does-not-exist-is-not-supported
+
+###### Error: Type TestRideSource not found
+
+Solution: Add `import org.apache.flink.training.exercises.testing.TaxiRideTestBase.TestRideSource` to /java/org.apache.flink.training.exercises/ridecleansing/RideCleansingTest.java.
+
 ## To-do
 
 1. Replicate Structured Streaming's word count example in Flink (reading from port),
