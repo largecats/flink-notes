@@ -22,6 +22,8 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.training.exercises.common.datatypes.TaxiFare;
 import org.apache.flink.training.exercises.common.datatypes.TaxiRide;
 import org.apache.flink.training.exercises.testing.TaxiRideTestBase;
+import org.apache.flink.training.exercises.testing.TaxiRideTestBase.TestRideSource;
+import org.apache.flink.training.exercises.testing.TaxiRideTestBase.TestFareSource;
 import org.apache.flink.training.solutions.ridesandfares.RidesAndFaresSolution;
 
 import org.junit.Test;

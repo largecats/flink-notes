@@ -63,7 +63,7 @@ class FraudDetector extends KeyedProcessFunction[Long, Transaction, Alert] {
   // open(): Hook that registers the state before the function starts processing data. Inherited from AbstractRichFunction, parent class of KeyedProcessFunction
   @throws[Exception]
   override def open(parameters: Configuration): Unit = {
-    val flagDescriptor = new ValueStateDescriptor("flag", Types.BOOLEAN)
+    val flagDescriptor = new ValueStateDescriptor("flag", Types.BOOLEAN) // Type.BOOLEAN tells the Descriptor how to serialize flagDescriptor
     flagState = getRuntimeContext.getState(flagDescriptor) // Create ValueState using ValueStateDescriptor
 
     val timerDescriptor = new ValueStateDescriptor("timer-state", Types.LONG)

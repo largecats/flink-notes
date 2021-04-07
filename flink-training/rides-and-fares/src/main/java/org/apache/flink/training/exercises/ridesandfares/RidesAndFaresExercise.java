@@ -30,6 +30,7 @@ import org.apache.flink.training.exercises.common.sources.TaxiRideGenerator;
 import org.apache.flink.training.exercises.common.utils.ExerciseBase;
 import org.apache.flink.training.exercises.common.utils.MissingSolutionException;
 import org.apache.flink.util.Collector;
+import org.apache.flink.api.common.state.*;
 
 /**
  * The "Stateful Enrichment" exercise of the Flink training in the docs.
@@ -69,18 +70,36 @@ public class RidesAndFaresExercise extends ExerciseBase {
 	}
 
 	public static class EnrichmentFunction extends RichCoFlatMapFunction<TaxiRide, TaxiFare, Tuple2<TaxiRide, TaxiFare>> {
+		// Key space shared by two streams
+		ValueState<TaxiRide> rideState;
+		ValueState<TaxiFare> fareState;
 
 		@Override
 		public void open(Configuration config) throws Exception {
-			throw new MissingSolutionException();
+			rideState = getRuntimeContext().getState(new ValueStateDescriptor<>("rideState", TaxiRide.class));
+			fareState = getRuntimeContext().getState(new ValueStateDescriptor<>("fareState", TaxiFare.class));
 		}
 
 		@Override
 		public void flatMap1(TaxiRide ride, Collector<Tuple2<TaxiRide, TaxiFare>> out) throws Exception {
+			TaxiFare fare = fareState.value();
+			if (fare != null) {
+				fareState.clear();
+				out.collect(Tuple2.of(ride, fare));
+			} else {
+				rideState.update(ride);
+			}
 		}
 
 		@Override
 		public void flatMap2(TaxiFare fare, Collector<Tuple2<TaxiRide, TaxiFare>> out) throws Exception {
+			TaxiRide ride = rideState.value();
+			if (ride != null) {
+				rideState.clear();
+				out.collect(Tuple2.of(ride, fare));
+			} else {
+				fareState.update(fare);
+			}
 		}
 	}
 }

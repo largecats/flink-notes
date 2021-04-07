@@ -19,6 +19,7 @@ dependencies {
     api "org.apache.flink:flink-runtime_${scalaBinaryVersion}:${flinkVersion}"
     api "org.apache.flink:flink-streaming-java_${scalaBinaryVersion}:${flinkVersion}"
     api "org.apache.flink:flink-streaming-scala_${scalaBinaryVersion}:${flinkVersion}"
+    api "joda-time:joda-time:2.10.10" // For Flink documentation exapmle: https://ci.apache.org/projects/flink/flink-docs-release-1.12/learn-flink/etl.html#aggregations-on-keyed-streams
 
     testApi "junit:junit:${junitVersion}"
     testApi "org.apache.flink:flink-test-utils-junit:${flinkVersion}"

@@ -1,27 +1,26 @@
-# Notes
+# Comparison with Spark
 
-## Comparison with Structured Streaming
+|                                       | Spark                                                        | Flink                                                        |
+| ------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Model                                 | Batch is batch.<br />Stream is micro-batch.                  | Stream is unbounded stream.<br />Batch is bounded stream.    |
+| APIs                                  | Batch & Stream: RDD (MapReduce-like), DataFrame, Dataset (SQL-like) | Batch: DataSet (MapReduce-like), Table (SQL-like) <br />Stream: DataStream (MapReduce-like), Table (SQL-like) |
+| Arbitrary stateful operations support | `mapGroupsWithState`, `flatMapGroupsWithState`               | `ProcessFunction`                                            |
 
-**Basic building block.** Structured streaming: batch. Flink: stream.
+Concepts:
 
-Structured streaming: Batch is batch. Stream is micro-batch (experimental: continuous processing).
+Read Concepts >> Architecture
 
-Flink: Batch is bounded stream. Stream is unbounded stream.
+| Concept                          | Flink                  | Spark                       |
+| -------------------------------- | ---------------------- | --------------------------- |
+| Orchestrator of the cluster.     | JobManager             | Application master          |
+| Worker processes of the cluster. | TaskManager            | Executor                    |
+|                                  | One-to-one streams     | Narrow transformations      |
+|                                  | Redistributing streams | Wide transformation/shuffle |
+| Basic unit of work.              | Task                   | Stage                       |
 
-**Data consistency guarantee.** End-to-end exactly-once fault-tolerance for both.
+# Try Flink
 
-**APIs.**
-
-|                               | Structured Streaming                                         | Flink                                                        |
-| ----------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Primitive operations          | DataFrame, Dataset APIs: MapReduce-like and SQL-like operations see [here](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#operations-on-streaming-dataframesdatasets) | DataStream API: MapReduce-like operations, see [here](https://ci.apache.org/projects/flink/flink-docs-release-1.12/dev/stream/operators/)<br />Table API: SQL-like operations, see [here](https://ci.apache.org/projects/flink/flink-docs-release-1.12/dev/table/tableApi.html) |
-| Arbitrary stateful operations | `mapGroupsWithState`, `flatMapGroupsWithState`               | `ProcessFunction`                                            |
-
-**Overall.** Spark's APIs seem more unified (Flink's DataSet API is only for batch). But Flink seems to have more natural support for streaming.
-
-## Try Flink
-
-### Local Installation
+## Local Installation
 
 Environment: Java 8 with flink-1.12.2-bin-scala_2.11.tgz.
 
@@ -50,9 +49,9 @@ Can search in [Maven repository](https://mvnrepository.com/search?q=flink+scala)
 /mnt/c/flink-1.12.2/bin/flink run target/scala-2.11/wordCount.jar
 ```
 
-#### Questions
+**Questions**
 
-**Observation.** When running in IDE, all statements are printed to the console:
+When running in IDE, all statements are printed to the console:
 
 ![](images/wordcount_ide.jpg)
 
@@ -68,7 +67,7 @@ And can be viewed in Flink UI's task manager stdout:
 
 ![](images/task_manager_stdout.png)
 
-**Investigations.** The difference is because `println("xxx")` prints to console by definition:
+The difference is because `println("xxx")` prints to console by definition:
 
 ![](images/println_definition.png)
 
@@ -76,7 +75,7 @@ And `counts.print()` prints to stdout by definition:
 
 ![](images/datastream_print_definition.png)
 
-**Questions.**
+Executor log redirection.
 
 1. Is there a way to print the result of `counts.print()` to console when running a local Flink cluster? 
 
@@ -89,10 +88,12 @@ And `counts.print()` prints to stdout by definition:
    2. To verify, tried starting flink on yarn: https://ci.apache.org/projects/flink/flink-docs-stable/deployment/resource-providers/yarn.html#starting-a-flink-session-on-yarn, but encountered following error. Probably due to version issue.
 
       ![](images/flink_on_yarn_error.png)
+      
+      Maybe need to add config files for Flink. Check if `hadoop classpath` has output.
 
 3. Will we be able to use YARN's log aggregation after integrating Flink with YARN?
 
-### Fraud Detection with the DataStream API
+## Fraud Detection with the DataStream API
 
 In ubuntu, type:
 
@@ -110,7 +111,7 @@ mvn archetype:generate \
 
 Then create project from existing sources in IntelliJ, choose maven instead of sbt.
 
-###### Error: java.lang.NoClassDefFound
+**Error: java.lang.NoClassDefFound**
 
 ![](images/fraud_detection_error.png)
 
@@ -128,17 +129,17 @@ Dummy code execution (raises alert for every transaction):
 
 ![](images/fraud_detection_first_version.png)
 
-#### Questions
+**Questions**
 
-1. Why is `timerState` needed?
+1. Why is `timerState` needed? To cancel the timer? Does that mean timer is uniquely identified by the time left to fire?
 
-### Real Time Reporting with the Table API
+## Real Time Reporting with the Table API
 
-##### Install docker in WSL
+### Install docker in WSL
 
 https://docs.docker.com/engine/install/ubuntu/ (not needed with docker desktop)
 
-###### Error: Cannot connect to Docker daemon
+**Error: Cannot connect to Docker daemon**
 
 ```shell
 $ sudo docker run hello-world
@@ -155,9 +156,9 @@ Solution:
 
 ![](images/docker_hello_world.jpg)
 
-##### Build docker container
+### Build docker container
 
-###### Error: Failed to build
+**Error: Failed to build**
 
 ![](images/docker_build_error.jpg)
 
@@ -177,9 +178,9 @@ If the Flink console does not display anything and the sql database is empty, th
 docker-compose logs -f jobmanager
 ```
 
-### Flink Operations Playground
+## Flink Operations Playground
 
-###### Error: posixpath - no such file or directory
+**Error: posixpath - no such file or directory**
 
 ```
 Traceback (most recent call last):
@@ -196,27 +197,23 @@ FileNotFoundError: [Errno 2] No such file or directory
 
 Solution: Restart Docker Desktop and WSL. https://github.com/docker/compose/issues/7899
 
-#### Upgrading & Rescaling a Job 
+## Upgrading & Rescaling a Job 
 
-###### Error: Could not stop with a savejoint job "..."
+**Error: Could not stop with a savejoint job**
 
 ![](images/savepoint_failure_1.jpg)
 
 ![](images/savepoint_failure_2.jpg)
 
-https://stackoverflow.com/questions/53735318/flink-how-to-solve-error-this-job-is-not-stoppable
+Solution: Error is caused by user not having write permission to /tmp/flink-savepoints-directory. Run `chmod 777 /tmp/flink-savepoints-directory` to change permissions. 
 
-checkpointSize = -1:
+**Questions**
 
-![](images/checkpointSize.jpg)
+What's the right way to do this on c00?
 
-But the job's `isStoppable` property is false:
+# Learn Flink
 
-![](images/stoppable.jpg)
-
-## Learn Flink
-
-### Overview
+## Overview
 
 ```java
 DataStream<Person> flintstones = env.fromElements(
@@ -227,31 +224,81 @@ DataStream<Person> flintstones = env.fromElements(
 
 ![](images/fromElements.jpg)
 
-#### Questions
+**Questions**
 
-"State is always accessed locally" - does this mean it's stored in the memory/disk of executors (not sure what's the equivalent in Flink)?
+Q: "State is always accessed locally" - does this mean it's stored in the memory/disk of executors (not sure what's the equivalent in Flink)?
 
-### Intro to the DataStream API
+![](images/state_is_accessed_locally.jpg)
 
-###### Error: Unnecessarily replacing a task that does not exist is not supported...
+A: It means it's stored in the disk of machines. There seems to be no equivalent of Spark executor process in Flink. Each of the orange box corresponds to a TaskManager.
 
-Solution: Change Gradle to IntelliJ IDEA in IntelliJ IDEA >> File >> Settings >> Build, Execution, Deployhment >> Gradle >> Build and run using: IntelliJ IDEA; Run tests using: IntelliJ IDEA.
+## Intro to the DataStream API
+
+**Error: Unnecessarily replacing a task that does not exist is not supported**
+
+Solution: Change Gradle to IntelliJ IDEA in IntelliJ IDEA >> File >> Settings >> Build, Execution, Deployment >> Gradle >> Build and run using: IntelliJ IDEA; Run tests using: IntelliJ IDEA.
 
 https://stackoverflow.com/questions/59094029/unnecessarily-replacing-a-task-that-does-not-exist-is-not-supported
 
-###### Error: Type TestRideSource not found
+**Error: Type TestRideSource not found**
 
 Solution: Add `import org.apache.flink.training.exercises.testing.TaxiRideTestBase.TestRideSource` to /java/org.apache.flink.training.exercises/ridecleansing/RideCleansingTest.java.
 
-### Data Pipelines & ETL
+## Data Pipelines & ETL
 
-#### Questions
+### KeyedStreams
 
-What does the flapMap example do? What's the expected output?
+#### Aggregation on Keyed Streams
 
+1. Before adding `import org.joda.time.Interval;`, add `api "joda-time:joda-time:2.10.10"` to \flink-training\common\build.gradle >> dependencies.
 
+2. Need to convert `value.startTime, value.endTime` from `Instant` to `Long` using `toEpochMilli()` before passing to `new Interval()`.
 
-## To-do
+3. Output contains prefix `PT`: https://stackoverflow.com/questions/51168022/what-does-pt-prefix-stand-for-in-duration
+
+   ![](images/aggregation_on_duration_output.jpg)
+
+**Questions**
+
+1. What does the flapMap example do? What's the expected output? Doesn't it still collect one record per row?
+
+   It filters that datastream by collecting only those rows that satisfy the condition.
+
+   It collects *at most* one record per row. This example shows that unlike map which performs only one-to-one transformation, flatMap can produce one-to-many or *one-to-none* transformations.
+
+2. Does `keyBy` on its own do anything? Does it repartition the datastream? If so, how to observe the effect (sth like spark's `ds.rdd.glom.collect`)?
+
+   It repartitions the datastream. 
+
+### Stateful Transformations
+
+**Questions**
+
+1. "Vertically scalable" - does it mean scaling the storage of individual machines as opposed to increasing the number of machines in the cluster (horizontally scalable)?
+
+   Yes.
+
+2. Why need to use `Types.BOOLEAN` to tell `ValueStateDescriptor` how to serialize `keyHasBeenSeen`? Doesn't it already know the value state is of type `Boolean`?
+
+   1. The previous two `Boolean` are merely declaration. The `Types.BOOLEAN` is a parameter passed to the constructor `ValueStateDescriptor`. They are not related.
+
+   ![](images/valueStateDescriptor_keyHasBeenSeen.jpg)
+
+3. Is the same true for Structured Streaming? Seems that the section on stream-stream joins didn't mention anything about partitions of two the two steams.
+
+   1. Spark API is DataFrame/Dataset, doesn't have the low-level details. But if we drill down to the RDD operations, it will be like this:
+
+   ![](images/connected_streams_keyBy.jpg)
+
+4. States for different keys are kept separately so that each time `EnrichmentFunction` is called, the `flatMap1, flaMap2` are called with respect to the same key?
+
+   Yes. Don't need to compare key / interact with other keys. Spark equivalent: KeyedGroup sth.
+
+   ![](images/key_in_context.jpg)
+
+   ![](images/rides_and_fares.jpg)
+
+# To-do
 
 1. Replicate Structured Streaming's word count example in Flink (reading from port),
 2. Replicate the fraud detection example using sbt instead of maven.

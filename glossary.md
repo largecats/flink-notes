@@ -10,12 +10,6 @@
 
 **Tumble window.** A window with fixed size and whose buckets do not overlap.
 
-| Flink                  | Spark                       |
-| ---------------------- | --------------------------- |
-| JobManager             | Application master          |
-| TaskManager            | Executor                    |
-| One-to-one streams     | Narrow transformations      |
-| Redistributing streams | Wide transformation/shuffle |
-| Task                   | Stage                       |
-
 **POJO.** A plain old Java object is an ordinary Java object, not bound by any special restriction.
+
+**Single Abstract Method (SAM) pattern.** Java interfaces (traits in Scala) that allow only one abstract method.

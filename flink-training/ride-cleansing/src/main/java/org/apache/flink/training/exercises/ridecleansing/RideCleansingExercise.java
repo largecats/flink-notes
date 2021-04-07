@@ -23,15 +23,19 @@ import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.training.exercises.common.datatypes.TaxiRide;
-import org.apache.flink.training.exercises.common.datatypes.EnrichedRide;
+import org.apache.flink.training.exercises.common.datatypes.*;
 import org.apache.flink.training.exercises.common.sources.TaxiRideGenerator;
 import org.apache.flink.training.exercises.common.utils.ExerciseBase;
 import org.apache.flink.training.exercises.common.utils.MissingSolutionException;
 import org.apache.flink.training.exercises.common.utils.GeoUtils;
 import org.apache.flink.util.Collector;
+import org.apache.flink.api.java.tuple.*;
 
 import java.util.logging.Filter;
+import org.joda.time.Interval;
+import org.joda.time.Minutes;
+
+import javax.xml.crypto.Data;
 
 /**
  * The "Ride Cleansing" exercise from the Flink training in the docs.
@@ -64,7 +68,25 @@ public class RideCleansingExercise extends ExerciseBase {
 //				.filter(new NYCFilter())
 //				.map(new Enrichment());
 				.flatMap(new NYCEnrichment());
-		enrichedNYCRides.print();
+//				.keyBy(enrichedRide -> enrichedRide.startCell);
+//		enrichedNYCRides.print();
+
+		DataStream<Tuple2<Integer, Minutes>> minutesByStartCell = enrichedNYCRides.flatMap(
+				new FlatMapFunction<EnrichedRide, Tuple2<Integer, Minutes>>() {
+					@Override
+					public void flatMap(EnrichedRide value, Collector<Tuple2<Integer, Minutes>> out) throws Exception {
+						if (!value.isStart) {
+							Interval rideInterval = new Interval(value.startTime.toEpochMilli(), value.endTime.toEpochMilli()); // Need to convert Instant to Long
+							Minutes duration = rideInterval.toDuration().toStandardMinutes();
+							out.collect(new Tuple2<>(value.startCell, duration));
+						}
+					}
+				}
+		);
+		minutesByStartCell
+				.keyBy(value -> value.f0) // Use the first field of the tuple as key; same as value -> value.startCell
+				.maxBy(1) // Use the index 1 field of the tuple as value
+				.print();
 
 		// print the filtered stream
 //		printOrTest(filteredRides);
