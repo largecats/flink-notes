@@ -81,7 +81,7 @@ And `counts.print()` prints to stdout by definition:
 
 ![](images/datastream_print_definition.png)
 
-Executor log redirection.
+The stdout might have been redirected to the log file (like Spark's executor log).
 
 1. Is there a way to print the result of `counts.print()` to console when running a local Flink cluster? 
 
