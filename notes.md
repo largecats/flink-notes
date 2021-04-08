@@ -43,6 +43,12 @@ The `% provided` is required to scope the dependencies. Otherwise might throw th
 
 Can search in [Maven repository](https://mvnrepository.com/search?q=flink+scala) for the dependency names.
 
+If directly running the main class in IDE instead of using sbt-assembly, go to "Edit Configurations" and select "Include dependencies with 'Provided' scope".
+
+![](images/intellij_edit_config.jpg)
+
+![](images/intellij_config.jpg)
+
 **Submitting job to cluster.** Submit via 
 
 ```
@@ -93,6 +99,8 @@ Executor log redirection.
 
 3. Will we be able to use YARN's log aggregation after integrating Flink with YARN?
 
+   Can. But we don't necessarily have the need for log aggregation.
+
 ## Fraud Detection with the DataStream API
 
 In ubuntu, type:
@@ -119,11 +127,6 @@ Solution:
 
 - If using maven, in `pom.xml`, change `<scope>provided</scope>` to `<scope>compile</scope>`. See https://stackoverflow.com/questions/54106187/apache-flink-java-lang-noclassdeffounderror.
 
-- If using sbt, go to "Edit Configurations" and select "Include dependencies with 'Provided' scope".
-
-  ![](images/intellij_edit_config.jpg)
-
-  ![](images/intellij_config.jpg)
 
 Dummy code execution (raises alert for every transaction):
 
@@ -209,7 +212,9 @@ Solution: Error is caused by user not having write permission to /tmp/flink-save
 
 **Questions**
 
-What's the right way to do this on c00?
+1. What's the right way to do this on c00?
+
+   /tmp/flink-savepoints-directory is just the default directory for Flink to store savepoints. Can configure another directory with the proper permissions (e.g., /home/<username>) for Flink to store savepoints for jobs submitted by each user.
 
 # Learn Flink
 
