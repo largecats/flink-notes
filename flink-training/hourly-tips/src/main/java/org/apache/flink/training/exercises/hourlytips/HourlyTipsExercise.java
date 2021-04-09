@@ -60,7 +60,7 @@ public class HourlyTipsExercise extends ExerciseBase {
 				.process(new GetTotalTips());
 
 		DataStream<Tuple3<Long, Long, Float>> hourlyMax = totalTips
-				.windowAll(TumblingEventTimeWindows.of(Time.hours(1)))
+				.windowAll(TumblingEventTimeWindows.of(Time.hours(1))) // non-keyed stream needs windowAll()
 				.maxBy(2);
 
 		printOrTest(hourlyMax);
