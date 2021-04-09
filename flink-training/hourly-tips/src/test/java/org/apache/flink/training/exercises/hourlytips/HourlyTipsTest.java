@@ -21,6 +21,7 @@ package org.apache.flink.training.exercises.hourlytips;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.training.exercises.common.datatypes.TaxiFare;
 import org.apache.flink.training.exercises.testing.TaxiRideTestBase;
+import org.apache.flink.training.exercises.testing.TaxiRideTestBase.TestFareSource;
 import org.apache.flink.training.solutions.hourlytips.HourlyTipsSolution;
 
 import org.junit.Test;
