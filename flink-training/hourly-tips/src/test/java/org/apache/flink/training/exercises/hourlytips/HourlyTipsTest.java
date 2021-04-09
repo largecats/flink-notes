@@ -31,11 +31,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class HourlyTipsTest extends TaxiRideTestBase<Tuple3<Long, Long, Float>> {
 
 	static final Testable JAVA_EXERCISE = () -> HourlyTipsExercise.main(new String[]{});
+	float delta = 1e-01F;
+	double factor = Math.pow(10.0, 6.0);
 
 	@Test
 	public void testOneDriverOneTip() throws Exception {
@@ -49,7 +52,15 @@ public class HourlyTipsTest extends TaxiRideTestBase<Tuple3<Long, Long, Float>> 
 
 		List<Tuple3<Long, Long, Float>> expected = Collections.singletonList(max);
 
-		assertEquals(expected, results(source));
+//		assertEquals(expected, results(source));
+		List<Tuple3<Long, Long, Float>> ans = results(source);
+		for (int i = 0; i < expected.size(); i++) {
+			Tuple3<Long, Long, Float> t1 = expected.get(i);
+			Tuple3<Long, Long, Float> t2 = ans.get(i);
+			assertEquals(t1.f0 / factor, t2.f0/ factor, delta);
+			assertEquals(t1.f1, t2.f1);
+			assertEquals(t1.f2, t2.f2);
+		}
 	}
 
 	@Test
