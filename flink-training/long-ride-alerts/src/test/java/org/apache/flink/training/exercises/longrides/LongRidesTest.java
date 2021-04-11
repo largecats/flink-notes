@@ -20,6 +20,7 @@ package org.apache.flink.training.exercises.longrides;
 
 import org.apache.flink.training.exercises.common.datatypes.TaxiRide;
 import org.apache.flink.training.exercises.testing.TaxiRideTestBase;
+import org.apache.flink.training.exercises.testing.TaxiRideTestBase.TestRideSource;
 import org.apache.flink.training.solutions.longrides.LongRidesSolution;
 
 import org.junit.Test;
