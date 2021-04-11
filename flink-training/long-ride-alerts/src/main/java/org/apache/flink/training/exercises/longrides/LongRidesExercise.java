@@ -41,7 +41,7 @@ import org.apache.flink.api.common.state.ValueStateDescriptor;
 
 public class LongRidesExercise extends ExerciseBase {
 
-	static long ONE_HOUR = 60 * 60 * 1000L;
+	private static long ONE_HOUR = 60 * 60 * 1000L;
 
 	/**
 	 * Main method.
