@@ -69,3 +69,10 @@ object Main {
     env.execute("Streaming WordCount")
   }
 }
+
+/*
+1. Start Flink cluster
+:/usr/local/flink-1.12.2$ ./bin/start-cluster.sh
+2. Build by sbt wordCount/assembly.
+3. Run bash main.sh --input "/mnt/c/users/.../flink/flink-notes/sample.txt" --output "/mnt/c/users/.../Desktop/output.txt"
+ */
