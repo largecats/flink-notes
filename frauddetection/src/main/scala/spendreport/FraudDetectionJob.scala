@@ -18,6 +18,9 @@
 
 package spendreport
 
+import java.time.Duration
+
+import org.apache.flink.api.common.eventtime.{SerializableTimestampAssigner, WatermarkStrategy}
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.walkthrough.common.sink.AlertSink
 import org.apache.flink.walkthrough.common.entity.Alert
@@ -36,6 +39,16 @@ object FraudDetectionJob {
 
     val transactions: DataStream[Transaction] = env
       .addSource(new TransactionSource) // Generates an infinite stream of card transactions
+//      .assignTimestampsAndWatermarks(
+//        WatermarkStrategy.forBoundedOutOfOrderness[Transaction](Duration.ofMillis(0))
+//          .withTimestampAssigner( // .withTimestampAssigner((txn: Transaction) => txn.getTimestamp) cannot
+//            new SerializableTimestampAssigner[Transaction] {
+//              override def extractTimestamp(t: Transaction, l: Long): Long = {
+//                t.getTimestamp
+//              }
+//            }
+//          )
+//      )
       .name("transactions") // For debugging purpose
 
     val alerts: DataStream[Alert] = transactions
